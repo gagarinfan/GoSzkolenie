@@ -46,8 +46,6 @@ func main() {
 		log.Fatal("No nie mogę odczytać z bazy, bo: ", err)
 	}
 	router := mux.NewRouter()
-	people = append(people, Person{ID: "1", Name: "Andrzej", Location: "Ciechocinek"})
-	people = append(people, Person{ID: "2", Name: "Łysy", Location: "Jelitkowo"})
 	router.HandleFunc("/people", GetPeopleEndpoint).Methods("GET")
 	router.HandleFunc("/people/{id}", GetPersonEndpoint).Methods("GET")
 	router.HandleFunc("/people/{id}", CreatePersonEndpoint).Methods("POST")
