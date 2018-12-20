@@ -88,13 +88,13 @@ func dodaj(cnstr string, name string, location string) (int64, error) {
 	var err error
 	db, ctx, errdb := connopen(cnstr)
 	if errdb != nil {
-		log.Fatal("Problem z db prepare: ", err.Error())
+		log.Println("Problem z db prepare: ", err.Error())
 	}
 	var zapins = "insert into TestSchema.Employees (name, location) values (@name,@location); select @@identity;"
 
 	skladnia, err := db.Prepare(zapins)
 	if err != nil {
-		log.Fatal("Problem z db prepare: ", err.Error())
+		log.Println("Problem z db prepare: ", err.Error())
 	}
 	defer skladnia.Close()
 	//var name, location string
@@ -105,9 +105,8 @@ func dodaj(cnstr string, name string, location string) (int64, error) {
 	var noweid int64
 	err = row.Scan(&noweid)
 	if err != nil {
-		log.Fatal("Błąd w wyniku zapytania: ", err.Error())
+		log.Println("Błąd w wyniku zapytania: ", err.Error())
 	}
-	log.Println("Gicior")
 	connclose(db)
 	return noweid, err
 }
@@ -233,10 +232,7 @@ func CreatePersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	person.Location = params["location"]
 	people = append(people, person)
 	json.NewEncoder(w).Encode(people)
-	_, errnew := dodaj(cnstr, person.Name, person.Location)
-	if errnew != nil {
-		log.Fatal("Cannot save. Caused by: ", errnew)
-	}
+	_, _ = dodaj(cnstr, person.Name, person.Location)
 }
 func DeletePersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
