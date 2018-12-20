@@ -224,6 +224,7 @@ func GetPeopleEndpoint(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(people)
 }
 func CreatePersonEndpoint(w http.ResponseWriter, r *http.Request) {
+	cnstr := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;", server, user, password, port, database)
 	params := mux.Vars(r)
 	var person Person
 	_ = json.NewDecoder(r.Body).Decode(&person)
@@ -232,6 +233,10 @@ func CreatePersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	person.Location = params["location"]
 	people = append(people, person)
 	json.NewEncoder(w).Encode(people)
+	_, errnew := dodaj(cnstr, person.Name, person.Location)
+	if errnew != nil {
+		log.Fatal("Cannot save. Caused by: ", errnew)
+	}
 }
 func DeletePersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
