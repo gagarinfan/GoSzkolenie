@@ -35,9 +35,10 @@ func getEnv(key, defaultValue string) string {
 }
 
 var people []Person
+var cnstr = fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;", server, user, password, port, database)
 
 func main() {
-	cnstr := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;", server, user, password, port, database)
+
 	fmt.Println(cnstr)
 	var err error
 
@@ -84,13 +85,13 @@ func czytajdb(cnstr string) error {
 	return errq
 }
 
-func dodaj(cnstr string, name string, location string) (int64, error) {
+func dodaj(cnstr string, name string, location string, tableName string) (int64, error) {
 	var err error
 	db, ctx, errdb := connopen(cnstr)
 	if errdb != nil {
 		log.Println("Problem z db prepare: ", err.Error())
 	}
-	var zapins = "insert into TestSchema.Employees (name, location) values (@name,@location); select @@identity;"
+	var zapins = "insert into TestSchema.EmployeesTMP (name, location) values (@name,@location); select @@identity;"
 
 	skladnia, err := db.Prepare(zapins)
 	if err != nil {
@@ -99,6 +100,7 @@ func dodaj(cnstr string, name string, location string) (int64, error) {
 	defer skladnia.Close()
 	//var name, location string
 	row := skladnia.QueryRowContext(ctx,
+		//sql.Named("tableName", tableName),
 		sql.Named("name", name),
 		sql.Named("location", location))
 
@@ -208,6 +210,23 @@ func connclose(db *sql.DB) {
 	defer db.Close()
 }
 
+func wypelnijTempTable() {
+	//var sessionid string
+	//sessionid = "tg1"
+	nazwatb := "TestSchema.EmployeesTMP"
+
+	for _, item := range people {
+		{
+			name := item.Name
+			location := item.Location
+			_, err := dodaj(cnstr, name, location, nazwatb)
+			if err != nil {
+				fmt.Println("Nie dodałem, bo: ", err.Error())
+			}
+		}
+	}
+}
+
 //<import json>
 func GetPersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
@@ -223,7 +242,6 @@ func GetPeopleEndpoint(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(people)
 }
 func CreatePersonEndpoint(w http.ResponseWriter, r *http.Request) {
-	cnstr := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;", server, user, password, port, database)
 	params := mux.Vars(r)
 	var person Person
 	_ = json.NewDecoder(r.Body).Decode(&person)
@@ -232,7 +250,11 @@ func CreatePersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	person.Location = params["location"]
 	people = append(people, person)
 	json.NewEncoder(w).Encode(people)
-	_, _ = dodaj(cnstr, person.Name, person.Location)
+
+	//wywołanie dodania do temptable
+	wypelnijTempTable()
+
+	_, _ = dodaj(cnstr, person.Name, person.Location, "TestSchema.EmployeesTMP")
 }
 func DeletePersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
