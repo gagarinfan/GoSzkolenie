@@ -4,3 +4,5 @@ SQL/debug
 SQL2/debug
 .gitignore
 SQL3/debug
+Backup/sql2bck.go
+SQL4/debug
