@@ -2,7 +2,12 @@
 SQL/debug
 .vscode/launch.json
 SQL2/debug
-.gitignore
+.gitignores
 SQL3/debug
 Backup/sql2bck.go
 SQL4/debug
+5/debug
+SQL4/server.key
+SQL4/server.cert
+32347089_localhost.key
+32347089_localhost.cert

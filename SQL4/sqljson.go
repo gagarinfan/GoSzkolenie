@@ -52,8 +52,8 @@ func main() {
 	router.HandleFunc("/people/{id}", GetPersonEndpoint).Methods("GET")
 	router.HandleFunc("/people/{id}+{name}+{location}", CreatePersonEndpoint).Methods("POST")
 	router.HandleFunc("/people/{id}", DeletePersonEndpoint).Methods("DELETE")
-	log.Fatal(http.ListenAndServe(":8000", router))
-
+	log.Fatal(http.ListenAndServeTLS(":8000", "server.cert", "server.key", router))
+	//if want not to use TLS log.Fatal(http.ListenAndServe(":8000", router))
 }
 
 func czytajdb(cnstr string) error {
