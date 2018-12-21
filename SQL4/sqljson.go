@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+//Person structure
 type Person struct {
 	ID       string `json:"id,omitempty"`
 	Name     string `json:"name,omitempty"`
@@ -228,6 +229,8 @@ func wypelnijTempTable() {
 }
 
 //<import json>
+
+//GetPersonEndpoint function
 func GetPersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	for _, item := range people {
@@ -238,9 +241,13 @@ func GetPersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(&Person{})
 }
+
+//GetPeopleEndpoint function
 func GetPeopleEndpoint(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(people)
 }
+
+//CreatePersonEndpoint function
 func CreatePersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var person Person
@@ -256,6 +263,8 @@ func CreatePersonEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	_, _ = dodaj(cnstr, person.Name, person.Location, "TestSchema.EmployeesTMP")
 }
+
+//DeletePersonEndpoint function
 func DeletePersonEndpoint(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	for index, item := range people {
