@@ -8,7 +8,7 @@ import (
 	"github.com/jinzhu/gorm"
 
 	// _ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/krzkowalczyk/GoSzkolenie/MVC/model"
+	"github.com/gagarinfan/GoSzkolenie/MVC/model"
 )
 
 func main() {
